@@ -29,7 +29,7 @@ round(Name, Backoff, Round, Proposal, Acceptors, PanelId) ->
       {Value, Round};
     abort ->
       timer:sleep(rand:uniform(Backoff)),
-      Next = order:inc({Round, self()}),
+      Next = order:inc(Round),
       round(Name, (2*Backoff), Next, Proposal, Acceptors, PanelId)
   end.
 
@@ -86,7 +86,7 @@ vote(N, Round) ->
     {vote, _} ->
       vote(N, Round);
     {sorry, {accept, Round}} ->
-      vote(N-1, Round);
+      vote(N, Round);
     {sorry, _} ->
       vote(N, Round)
   after ?timeout ->
