@@ -90,7 +90,7 @@ collect(N, Round, MaxVoted, Proposal) ->
     {promise, _, _,  _} ->
       collect(N, Round, MaxVoted, Proposal);
     {sorry, {prepare, Round}} ->
-      collect(N-1, Round, MaxVoted, Proposal);
+      collect(N, Round, MaxVoted, Proposal);
     {sorry, _} ->
       collect(N, Round, MaxVoted, Proposal)
   after ?timeout ->
@@ -110,7 +110,7 @@ vote(N, Round) ->
       vote(N, Round);
 
     {sorry, {accept, Round}} ->
-      vote(N-1, Round);
+      vote(N, Round);
     {sorry, _} ->
       vote(N, Round)
   after ?timeout ->
