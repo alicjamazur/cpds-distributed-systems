@@ -1,4 +1,4 @@
--module(acceptor).
+-module(acceptor_exp2).
 -export([start/2]).
 
 start(Name, PanelId) ->
