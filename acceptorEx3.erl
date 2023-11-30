@@ -1,6 +1,7 @@
--module(acceptorEx1).
+-module(acceptorEx3).
 -export([start/2]).
--define(delay, 5000).
+-define(drop, 7).
+
 
 
 start(Name, PanelId) ->
@@ -18,8 +19,12 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
     {prepare, Proposer, Round} ->
       case order:gr(Round, Promised) of
         true ->
-          T = rand:uniform(?delay),
-          timer:send_after(T, Proposer, {promise, Round, Voted, Value}),
+          P = rand:uniform(10),
+          if P =< ?drop ->
+           io:format("message dropped~n");
+          true ->
+          Proposer ! {promise, Round, Voted, Value}
+          end,
           io:format("[Acceptor ~w] Phase 1: promised ~w voted ~w colour ~w~n",
                     [Name, Round, Voted, Value]),
           Colour = case Value of na -> {0,0,0}; _ -> Value end,
@@ -33,8 +38,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
     {accept, Proposer, Round, Proposal} ->
       case order:goe(Round, Promised) of
         true ->
-          T = rand:uniform(?delay),
-          timer:send_after(T, Proposer, {vote, Round}),
+          Proposer ! {vote, Round},
           case order:goe(Round , Voted) of
             true ->
               io:format("[Acceptor ~w] Phase 2: promised ~w voted ~w colour ~w~n",

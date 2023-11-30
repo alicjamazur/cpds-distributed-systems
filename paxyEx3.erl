@@ -1,4 +1,4 @@
--module(paxyEx1).
+-module(paxyEx3).
 -export([start/1, stop/0, stop/1]).
 
 -define(RED, {255,0,0}).
@@ -33,7 +33,7 @@ start_acceptors(AccIds, AccReg) ->
       ok;
     [AccId|Rest] ->
       [RegName|RegNameRest] = AccReg,
-      register(RegName, acceptorEx1:start(RegName, AccId)),
+      register(RegName, acceptorEx3:start(RegName, AccId)),
       start_acceptors(Rest, RegNameRest)
   end.
 

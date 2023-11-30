@@ -1,4 +1,4 @@
--module(paxyEx1).
+-module(paxyEx4Acc).
 -export([start/1, stop/0, stop/1]).
 
 -define(RED, {255,0,0}).
@@ -7,8 +7,8 @@
 
 % Sleep is a list with the initial sleep time for each proposer
 start(Sleep) ->
-  AcceptorNames = ["Homer", "Marge", "Bart", "Lisa", "Maggie"],
-  AccRegister = [homer, marge, bart, lisa, maggie],
+  AcceptorNames = ["Homer", "Marge", "Bart", "Lisa", "Maggie", "Moe", "Barney", "Lenny"],
+  AccRegister = [homer, marge, bart, lisa, maggie, moe, barney, lenny],
   ProposerNames = [{"Fry", ?RED}, {"Bender", ?GREEN}, {"Leela", ?BLUE}],
   PropInfo = [{fry, ?RED}, {bender, ?GREEN}, {leela, ?BLUE}],
   register(gui, spawn(fun() -> gui:start(AcceptorNames, ProposerNames) end)),
@@ -33,7 +33,7 @@ start_acceptors(AccIds, AccReg) ->
       ok;
     [AccId|Rest] ->
       [RegName|RegNameRest] = AccReg,
-      register(RegName, acceptorEx1:start(RegName, AccId)),
+      register(RegName, acceptor:start(RegName, AccId)),
       start_acceptors(Rest, RegNameRest)
   end.
 
@@ -62,6 +62,9 @@ stop() ->
   stop(bart),
   stop(lisa),
   stop(maggie),
+  stop(moe),
+  stop(barney),
+  stop(lenny),
   stop(gui).
 
 stop(Name) ->
