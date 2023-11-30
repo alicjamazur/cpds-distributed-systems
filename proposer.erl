@@ -108,7 +108,6 @@ vote(N, Round) ->
     %This receive message catches the round numbers that are not from this round (previous rounds) and ignores them.
     {vote, _} ->
       vote(N, Round);
-
     {sorry, {accept, Round}} ->
       vote(N, Round);
     {sorry, _} ->

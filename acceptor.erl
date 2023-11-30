@@ -30,7 +30,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
           acceptor(Name, Round, Voted, Value, PanelId);
         false ->
           %We send sorry message with the value that we promised
-          Proposer ! {sorry, {prepare, Promised}},
+          Proposer ! {sorry, {prepare, Round}},
           %We call the acceptor function again and restart the process, with
           %the same promised value that we had before
           acceptor(Name, Promised, Voted, Value, PanelId)
@@ -52,7 +52,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
               PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [Round]), 
                          "Promised: " ++ io_lib:format("~p", [Promised]), Proposal},
               %We call the acceptor function again, with new values for the 
-              %last voted rounda and the color.
+              %last voted round and the color.
               acceptor(Name, Promised, Round, Proposal, PanelId);
             false ->
               %If the round is not the same or greater than the last voted,
@@ -60,7 +60,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
               acceptor(Name, Promised, Voted, Value, PanelId)
           end;                            
         false ->
-          Proposer ! {sorry, {accept, Promised}},
+          Proposer ! {sorry, {accept, Round}},
           acceptor(Name, Promised, Voted, Value, PanelId)
       end;
     stop ->
