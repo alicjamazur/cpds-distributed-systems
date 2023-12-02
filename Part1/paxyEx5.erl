@@ -7,8 +7,8 @@
 
 % Sleep is a list with the initial sleep time for each proposer
 start(Sleep) ->
-  AcceptorNode = 'paxy-acc@127.0.0.1', % Node where acceptors will run
-  ProposerNode = 'paxy-pro@127.0.0.1', % Node where proposers will run
+  AcceptorNode = 'paxy-acc@Loriens-MacBook-Air', % Node where acceptors will run
+  ProposerNode = 'paxy-pro@Loriens-MacBook-Air', % Node where proposers will run
   AcceptorNames = ["Homer", "Marge", "Bart", "Lisa", "Maggie"],
   AccRegister = [homer, marge, bart, lisa, maggie],
   DistributedAccRegister = [{homer,AcceptorNode}, {marge,AcceptorNode}, {bart,AcceptorNode}, {lisa,AcceptorNode}, {maggie,AcceptorNode}],
@@ -61,7 +61,7 @@ wait_proposers(N) ->
   end.
 
 stop() ->
-  AcceptorNode = 'paxy-acc@127.0.0.1',
+  AcceptorNode = 'paxy-acc@Loriens-MacBook-Air',
   stop({homer, AcceptorNode}),
   stop({marge, AcceptorNode}),
   stop({bart, AcceptorNode}),

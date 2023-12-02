@@ -5,10 +5,10 @@
 -define(backoff, 10).
 
 start(Name, Proposal, Acceptors, Sleep, PanelId, Main) ->
- spawn(fun() -> init(Name, Proposal, Acceptors, Sleep, PanelId, Main) end).
+ spawn(node(),fun() -> init(Name, Proposal, Acceptors, Sleep, PanelId, Main) end).
 
 init(Name, Proposal, Acceptors, Sleep, PanelId, Main) ->
-  net_kernel:connect_node('paxy-acc@127.0.0.1'),
+  net_kernel:connect_node('paxy-acc@Loriens-MacBook-Air'),
   timer:sleep(Sleep),
   Begin = erlang:monotonic_time(),
   Round = order:first(Name),

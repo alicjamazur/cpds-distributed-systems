@@ -12,7 +12,7 @@ init(Name, PanelId) ->
   acceptor(Name, Promised, Voted, Value, PanelId).
 
 acceptor(Name, Promised, Voted, Value, PanelId) ->
-  net_kernel:connect_node('paxy-pro@127.0.0.1'),
+  net_kernel:connect_node('paxy-pro@Loriens-MacBook-Air'),
   receive
     {prepare, Proposer, Round}->
       case order:gr(Round, Promised) of
