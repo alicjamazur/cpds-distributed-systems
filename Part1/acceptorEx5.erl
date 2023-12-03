@@ -5,7 +5,6 @@ start(Name, PanelId) ->
   spawn(fun() -> init(Name, PanelId) end).
         
 init(Name, PanelId) ->
-  self() ! {print, io:format("Acceptor init")},
   Promised = order:null(), 
   Voted = order:null(),
   Value = na,

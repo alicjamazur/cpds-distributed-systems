@@ -106,7 +106,7 @@ accept(Round, Proposal, Acceptors) ->
 send(Name, Message) ->
   if is_tuple(Name) -> 
     Name ! Message;
-  true -> %local
+  true ->
     case whereis(Name) of
       undefined ->
 down; Pid ->
