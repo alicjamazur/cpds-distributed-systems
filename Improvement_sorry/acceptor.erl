@@ -1,19 +1,17 @@
--module(acceptorEx1).
+-module(acceptor).
 -export([start/2]).
--define(delay, 2000).
-
+-define(delay, 10).
 
 start(Name, PanelId) ->
   spawn(fun() -> init(Name, PanelId) end).
-
+        
 init(Name, PanelId) ->
-  Promised = order:null(),
+  Promised = order:null(), 
   Voted = order:null(),
   Value = na,
   acceptor(Name, Promised, Voted, Value, PanelId).
 
 acceptor(Name, Promised, Voted, Value, PanelId) ->
-
   receive
     {prepare, Proposer, Round} ->
       case order:gr(Round, Promised) of
@@ -21,9 +19,9 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
           T = rand:uniform(?delay),
           timer:send_after(T, Proposer, {promise, Round, Voted, Value}),
           io:format("[Acceptor ~w] Phase 1: promised ~w voted ~w colour ~w~n",
-                    [Name, Round, Voted, Value]),
+                 [Name, Round, Voted, Value]),
           Colour = case Value of na -> {0,0,0}; _ -> Value end,
-          PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [Voted]),
+          PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [Voted]), 
                      "Promised: " ++ io_lib:format("~p", [Round]), Colour},
           acceptor(Name, Round, Voted, Value, PanelId);
         false ->
@@ -38,13 +36,13 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
           case order:goe(Round , Voted) of
             true ->
               io:format("[Acceptor ~w] Phase 2: promised ~w voted ~w colour ~w~n",
-                         [Name, Promised, Round, Proposal]),
-              PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [Round]),
+                 [Name, Promised, Round, Proposal]),
+              PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [Round]), 
                          "Promised: " ++ io_lib:format("~p", [Promised]), Proposal},
               acceptor(Name, Promised, Round, Proposal, PanelId);
             false ->
               acceptor(Name, Promised, Voted, Value, PanelId)
-          end;
+          end;                            
         false ->
           Proposer ! {sorry, {accept, Round}},
           acceptor(Name, Promised, Voted, Value, PanelId)
