@@ -20,7 +20,7 @@ start(Sleep) ->
       spawn(fun() -> 
         Begin = erlang:monotonic_time(),
         start_proposers(PropIds, PropInfo, AccRegister, Sleep, self()),
-        timer:sleep(4000),
+        timer:sleep(3000),
         crash(maggie),
         wait_proposers(length(PropIds)),
         End = erlang:monotonic_time(),
@@ -84,7 +84,7 @@ crash(Name) ->
       pers:open(Name),
       {Promised, Voted, Value, Pn} = pers:read(Name),
       Pn ! {updateAcc, "Voted: CRASHED", "Promised: CRASHED", {0,0,0}},
-      io:format("[ACCEPTOR ~w ] CRASHED WITH CURRENT STATE:~n
+      io:format("~n~n[ACCEPTOR ~w ] CRASHED WITH CURRENT STATE:~n
          PROMISED = ~w~n
          VOTED = ~w~n
          VALUE = ~w~n~n",
@@ -92,7 +92,7 @@ crash(Name) ->
       pers:close(Name),
       unregister(Name),
       exit(Pid, "crash"),
-      timer:sleep(10000),
+      timer:sleep(5000),
       register(Name, acceptor:start(Name, Pn))
 end.
 

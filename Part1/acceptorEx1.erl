@@ -1,6 +1,6 @@
 -module(acceptorEx1).
 -export([start/2]).
--define(delay, 1500).
+-define(delay, 10).
 
 
 start(Name, PanelId) ->

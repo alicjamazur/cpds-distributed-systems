@@ -1,6 +1,6 @@
 -module(acceptorEx3).
 -export([start/2]).
--define(drop, 7).
+-define(drop, 6).
 
 
 
@@ -21,7 +21,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
         true ->
           P = rand:uniform(10),
           if P =< ?drop ->
-           io:format("message dropped~n");
+           io:format("Promise message dropped by acceptor [~w]~n",[Name]);
           true ->
           Proposer ! {promise, Round, Voted, Value}
           end,
@@ -38,7 +38,12 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
     {accept, Proposer, Round, Proposal} ->
       case order:goe(Round, Promised) of
         true ->
-          Proposer ! {vote, Round},
+          P = rand:uniform(10),
+          if P =< ?drop ->
+           io:format("Vote message dropped by acceptor [~w]~n",[Name]);
+          true ->
+          Proposer ! {vote, Round}
+          end,
           case order:goe(Round , Voted) of
             true ->
               io:format("[Acceptor ~w] Phase 2: promised ~w voted ~w colour ~w~n",

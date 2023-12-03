@@ -22,7 +22,7 @@ init(Name, PanelId) ->
             pers:open(Name), 
             {PrePromised, PreVoted, PreValue,Pn} = pers:read(Name),
             pers:close(Name),
-            io:format("[ACCEPTOR ~w ] RECOVERED WITH CURRENT STATE:~n
+            io:format("~n~n[ACCEPTOR ~w ] RECOVERED WITH CURRENT STATE:~n
             PROMISED = ~w~n
              VOTED = ~w~n
              VALUE = ~w~n~n",
