@@ -1,4 +1,4 @@
--module(proposer).
+-module(proposer_exp7).
 -export([start/6]).
 
 -define(timeout, 2000).
