@@ -27,6 +27,8 @@ init(Name, PanelId) ->
              VOTED = ~w~n
              VALUE = ~w~n~n",
             [Name, PrePromised, PreVoted, PreValue]),
+            PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [PreVoted]),
+                     "Promised: " ++ io_lib:format("~p", [PrePromised]), PreValue},
             acceptor(Name, PrePromised, PreVoted, PreValue, Pn)
     end.
 
@@ -36,6 +38,9 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
     {prepare, Proposer, Round} ->
       case order:gr(Round, Promised) of
         true ->
+          pers:open(Name),
+          pers:store(Name, Round, Voted, Value, PanelId),
+          pers:close(Name),
           T = rand:uniform(?delay),
           timer:send_after(T, Proposer, {promise, Round, Voted, Value}),
           io:format("[Acceptor ~w] Phase 1: promised ~w voted ~w colour ~w~n",
@@ -43,9 +48,6 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
           Colour = case Value of na -> {0,0,0}; _ -> Value end,
           PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [Voted]),
                      "Promised: " ++ io_lib:format("~p", [Round]), Colour},
-          pers:open(Name),
-          pers:store(Name, Round, Voted, Value, PanelId),
-          pers:close(Name),
           acceptor(Name, Round, Voted, Value, PanelId);
         false ->
           Proposer ! {sorry, {prepare, Round}},
