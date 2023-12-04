@@ -84,7 +84,7 @@ crash(Name) ->
       pers:open(Name),
       {Promised, Voted, Value, Pn} = pers:read(Name),
       Pn ! {updateAcc, "Voted: CRASHED", "Promised: CRASHED", {0,0,0}},
-      io:format("[ACCEPTOR ~w ] CRASHED WITH CURRENT STATE:~n
+      io:format("~n~n[ACCEPTOR ~w ] CRASHED WITH CURRENT STATE:~n
          PROMISED = ~w~n
          VOTED = ~w~n
          VALUE = ~w~n~n",
@@ -92,7 +92,7 @@ crash(Name) ->
       pers:close(Name),
       unregister(Name),
       exit(Pid, "crash"),
-      timer:sleep(10000),
+      timer:sleep(4000),
       register(Name, acceptor:start(Name, Pn))
 end.
 
