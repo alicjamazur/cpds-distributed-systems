@@ -46,7 +46,7 @@ start_proposers(PropIds, PropInfo, Acceptors, Sleep, Main) ->
     [PropId|Rest] ->
       [{RegName, Colour}|RestInfo] = PropInfo,
       [FirstSleep|RestSleep] = Sleep,
-      proposer:start(RegName, Colour, Acceptors, FirstSleep, PropId, Main),
+      proposer_exp6:start(RegName, Colour, Acceptors, FirstSleep, PropId, Main),
       start_proposers(Rest, RestInfo, Acceptors, RestSleep, Main)
   end.
 
@@ -93,6 +93,6 @@ crash(Name) ->
       unregister(Name),
       exit(Pid, "crash"),
       timer:sleep(4000),
-      register(Name, acceptor:start(Name, Pn))
+      register(Name, acceptor_exp6:start(Name, Pn))
 end.
 
