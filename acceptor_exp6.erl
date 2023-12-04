@@ -58,7 +58,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
           timer:send_after(T, Proposer, {vote, Round}),
           case order:goe(Round , Voted) of
             true ->
-              io:format("[Acceptor ~w] Phase 2: promised ~w voted ~w colour ~w~n",
+              io:format("~n~n[Acceptor ~w] Phase 2: promised ~w voted ~w colour ~w~n",
                          [Name, Promised, Round, Proposal]),
               PanelId ! {updateAcc, "Voted: " ++ io_lib:format("~p", [Round]),
                          "Promised: " ++ io_lib:format("~p", [Promised]), Proposal},
