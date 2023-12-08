@@ -8,7 +8,7 @@
 %% Time: Duration of the experiment (in secs)
 
 start(Clients, Entries, Reads, Writes, Time) ->
-    register(s, server:start(Entries)),
+    spawn('opty-srv@127.0.0.1', fun()-> register(s, server:start(Entries)) end),
     L = startClients(Clients, [], Entries, Reads, Writes),
     io:format("Starting: ~w CLIENTS, ~w ENTRIES, ~w RDxTR, ~w WRxTR, DURATION ~w s~n", 
          [Clients, Entries, Reads, Writes, Time]),
@@ -19,12 +19,12 @@ stop(L) ->
     io:format("Stopping...~n"),
     stopClients(L),
     waitClients(L),
-    s ! stop,
+    {s, 'opty-srv@127.0.0.1'} ! stop,
     io:format("Stopped~n").
 
 startClients(0, L, _, _, _) -> L;
 startClients(Clients, L, Entries, Reads, Writes) ->
-    Pid = client:start(Clients, Entries, Reads, Writes, s),
+    Pid = client:start(Clients, Entries, Reads, Writes, {s, 'opty-srv@127.0.0.1'}),
     startClients(Clients-1, [Pid|L], Entries, Reads, Writes).
 
 stopClients([]) ->

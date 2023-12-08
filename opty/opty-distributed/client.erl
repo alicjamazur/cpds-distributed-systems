@@ -5,7 +5,13 @@ start(ClientID, Entries, Reads, Writes, Server) ->
     spawn(fun() -> open(ClientID, Entries, Reads, Writes, Server, 0, 0) end).
 
 open(ClientID, Entries, Reads, Writes, Server, Total, Ok) ->
-    Server ! {open, self()},
+    case Total of
+        0 ->
+            Server ! {open, self()},
+            io:format("[Client][~w][~w] Sent `open` request to the server ~w~n", [node(), self(), Server]);
+        _ ->  % Exit after first completed transaction
+            ok
+    end,
     receive
         {stop, From} ->
             io:format("~w: Transactions TOTAL:~w, OK:~w, -> ~w % ~n",
@@ -13,9 +19,11 @@ open(ClientID, Entries, Reads, Writes, Server, Total, Ok) ->
             From ! {done, self()},
             ok;
         {transaction, Validator, Store} ->
+            io:format("[Client][~w][~w] Received `transaction` request ~n", [node(), self()]),
             Handler = handler:start(self(), Validator, Store),
             case do_transaction(ClientID, Entries, Reads, Writes, Handler) of
                 ok ->
+                    io:format("[Client][~w][~w] Received transaction commit confirmation ~n", [node(), self()]),
                     open(ClientID, Entries, Reads, Writes, Server, Total+1, Ok+1);
                 abort ->
                     open(ClientID, Entries, Reads, Writes, Server, Total+1, Ok)

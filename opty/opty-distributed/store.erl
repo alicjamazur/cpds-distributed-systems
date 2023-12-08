@@ -2,6 +2,7 @@
 -export([new/1, stop/1, lookup/2]).
 
 new(N) ->
+    io:format("[Store][~w] Initializing store entries ~n", [node()]),
     list_to_tuple(entries(N, [])).
 
 stop(Store) ->
