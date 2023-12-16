@@ -1,4 +1,4 @@
--module(client).
+-module(clientEx6).
 -export([start/5]).
 
 start(ClientID, Entries, Reads, Writes, Server) ->
@@ -8,8 +8,8 @@ open(ClientID, Entries, Reads, Writes, Server, Total, Ok) ->
     Server ! {open, self()},
     receive
         {stop, From} ->
-            io:format("~w: Transactions TOTAL:~w, OK:~w, -> ~w % ~n",
-            [ClientID, Total, Ok, 100*Ok/Total]),
+            io:format("~w: Transactions TOTAL:~w, OK:~w, -> ~w % ~w",
+            [ClientID, Total, Ok, 100*Ok/Total, Entries]),
             From ! {done, self()},
             ok;
         {transaction, Validator, Store} ->
@@ -42,14 +42,14 @@ do_transaction(ClientID, Entries, Reads, Writes, Handler) ->
 
 do_read(Entries, Handler) ->
     Ref = make_ref(),
-    Num = rand:uniform(Entries),
+    Num = lists:nth(rand:uniform(length(Entries)), Entries),
     Handler ! {read, Ref, Num},
     receive
         {value, Ref, Value} -> Value
     end.
 
 do_write(Entries, Handler, Value) ->
-    Num = rand:uniform(Entries),
+    Num = lists:nth(rand:uniform(length(Entries)), Entries),
     Handler ! {write, Num, Value}.
 
 do_commit(Handler) ->

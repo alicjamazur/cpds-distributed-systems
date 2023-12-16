@@ -1,4 +1,4 @@
--module(opty).
+-module(optyEx6).
 -export([start/5, stop/1]).
 
 %% Clients: Number of concurrent clients in the system
@@ -24,8 +24,14 @@ stop(L) ->
 
 startClients(0, L, _, _, _) -> L;
 startClients(Clients, L, Entries, Reads, Writes) ->
-    Pid = client:start(Clients, Entries, Reads, Writes, s),
+    Percentage =80,
+    Subset = generate_subset(Entries, Percentage),
+    Pid = client:start(Clients, Subset, Reads, Writes, s), % Passing Subset instead of Entries
     startClients(Clients-1, [Pid|L], Entries, Reads, Writes).
+
+generate_subset(Entries, Percentage) ->
+    SubsetSize = round(Percentage * Entries / 100),
+    lists:sublist([X || {_, X} <- lists:sort([{rand:uniform(), E} || E <- lists:seq(1, Entries)])], SubsetSize).
 
 stopClients([]) ->
     ok;
