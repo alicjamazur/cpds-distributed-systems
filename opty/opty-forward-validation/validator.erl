@@ -9,14 +9,13 @@ init()->
 
 validator() ->
     receive
-        {validate, Ref, Reads, Writes, Client} ->
-            Tag = make_ref(),
-            send_read_checks(Reads, Tag),
-            case check_reads(length(Reads), Tag) of
+        {validate, Ref, Writes, Client} ->
+            send_write_checks(Writes),
+            case check_writes(length(Writes)) of
                 ok ->
                     update(Writes),
                     Client ! {Ref, ok};
-                abort ->
+                conflict ->
                     Client ! {Ref, abort}
             end,
             validator();
@@ -32,19 +31,19 @@ update(Writes) ->
                   end, 
                   Writes).
 
-send_read_checks(Reads, Tag) ->
+send_write_checks(Writes) ->
     Self = self(),
-    lists:foreach(fun({Entry, Time}) -> 
-                  Entry ! {check, Tag, Time, Self}
-                  end, 
-                  Reads).
+    lists:foreach(fun({_, Entry, _}) ->
+                  Entry ! {check, Self}
+                  end,
+                  Writes).
 
-check_reads(0, _) ->
+check_writes(0) ->
     ok;
-check_reads(N, Tag) ->
+check_writes(N) ->
     receive
-        {Tag, ok} ->
-            check_reads(N-1, Tag);
-        {Tag, abort} ->
-            abort
+        no_active_read_conflict ->
+            check_writes(N-1);
+        active_read_conflict ->
+            conflict
     end.
