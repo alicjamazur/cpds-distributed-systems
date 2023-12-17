@@ -10,7 +10,8 @@ init()->
 validator() ->
     receive
         {validate, Ref, Writes, Client} ->
-            case forward_validate(Writes) of
+            send_write_checks(Writes),
+            case check_writes(length(Writes)) of
                 ok ->
                     update(Writes),
                     Client ! {Ref, ok};
@@ -30,17 +31,19 @@ update(Writes) ->
                   end, 
                   Writes).
 
-forward_validate(Writes) ->
-    Result = lists:foldl(
-        fun({_, Entry, _}, Acc) when Acc =:= ok ->
-                Entry ! {check, self()},
-                receive
-                    {active_read_conflict, _} ->
-                        conflict;
-                    {no_active_read_conflict, _} ->
-                        ok
-                end;
-           (_, Acc) ->
-                Acc
-        end, ok, Writes),
-    Result.
+send_write_checks(Writes) ->
+    Self = self(),
+    lists:foreach(fun({_, Entry, _}) ->
+                  Entry ! {check, Self}
+                  end,
+                  Writes).
+
+check_writes(0) ->
+    ok;
+check_writes(N) ->
+    receive
+        no_active_read_conflict ->
+            check_writes(N-1);
+        active_read_conflict ->
+            conflict
+    end.

@@ -22,9 +22,9 @@ entry(Value, Time, ActiveReaders) ->
         {check, ValidatorPid} ->
             case length(ActiveReaders) of
                 0 ->
-                    ValidatorPid ! {no_active_read_conflict, self()};
+                    ValidatorPid ! no_active_read_conflict;
                 _ ->
-                    ValidatorPid ! {active_read_conflict, self()}
+                    ValidatorPid ! active_read_conflict
             end,
             entry(Value, Time, ActiveReaders);
         stop ->
