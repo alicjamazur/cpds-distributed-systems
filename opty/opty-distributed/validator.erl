@@ -10,11 +10,13 @@ init()->
 validator() ->
     receive
         {validate, Ref, Reads, Writes, Client} ->
+            io:format("[Validator][~w] Validating transaction from Client ~w~n", [node(), Client]),
             Tag = make_ref(),
             send_read_checks(Reads, Tag),
             case check_reads(length(Reads), Tag) of
                 ok ->
                     update(Writes),
+                    io:format("[Validator][~w] Transaction from Client ~w commited ~n", [node(), Client]),
                     Client ! {Ref, ok};
                 abort ->
                     Client ! {Ref, abort}

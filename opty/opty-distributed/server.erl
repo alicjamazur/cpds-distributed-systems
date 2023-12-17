@@ -12,6 +12,7 @@ init(N) ->
 server(Validator, Store) ->
     receive 
         {open, Client} ->
+            io:format("[Server][~w] Sending `transaction` request to the Client ~w~n", [node(), Client]),
             Client ! {transaction, Validator, Store},
             server(Validator, Store);
         stop ->
